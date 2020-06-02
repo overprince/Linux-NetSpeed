@@ -5,12 +5,12 @@ export PATH
 #=================================================
 #	System Required: CentOS 6/7/8,Debian 8/9/10,ubuntu 16/18/19
 #	Description: BBR+BBRplus+Lotserver
-#	Version: 1.3.2.24
+#	Version: 1.3.2.30
 #	Author: 千影,cx9208,YLX
 #	更新内容及反馈:  https://blog.ylx.me/archives/783.html
 #=================================================
 
-sh_ver="1.3.2.24"
+sh_ver="1.3.2.30"
 github="github.000060000.xyz"
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
@@ -20,7 +20,7 @@ Tip="${Green_font_prefix}[注意]${Font_color_suffix}"
 
 #安装BBR内核
 installbbr(){
-	kernel_version="4.11.8"
+	kernel_version="5.6.15"
 	bit=`uname -m`
 	rm -rf bbr
 	mkdir bbr && cd bbr
@@ -28,76 +28,76 @@ installbbr(){
 	if [[ "${release}" == "centos" ]]; then
 		if [[ ${version} = "6" ]]; then
 			if [[ ${bit} = "x86_64" ]]; then
-				wget -N -O kernel-headers-c6.rpm https://github.com/ylx2016/kernel/releases/download/5.5.5/kernel-headers-5.5.5-1-c6.x86_64.rpm
-				wget -N -O kernel-c6.rpm https://github.com/ylx2016/kernel/releases/download/5.5.5/kernel-5.5.5-1-c6.x86_64.rpm
+				wget -N -O kernel-headers-c6.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EUCmObDQnMZEmKnhxS67sJkBG8kjbx0bjNF-XwTtzvgtAA?download=1
+				wget -N -O kernel-c6.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EeC72joP3HVNmrIbjlPg_coBs7kj29Md4f9psAjZOuqOdg?download=1
 			
 				yum install -y kernel-c6.rpm
 				yum install -y kernel-headers-c6.rpm
 			
-				kernel_version="5.5.5"
+				#kernel_version="5.5.5"
 			else
 				echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
 			fi
 		
 		elif [[ ${version} = "7" ]]; then
 			if [[ ${bit} = "x86_64" ]]; then
-				wget -N -O kernel-headers-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/ESigYTQckcNMucfg3_JD1rsBFKsbZpzcOECRAoU6e1nvsw?download=1
-				wget -N -O kernel-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/Eb58pBWVa0BPqK-bQ1oDHTEBKAwRH7oYfm_5a9pwPkNPfA?download=1
+				wget -N -O kernel-headers-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EW1QJB1YjWVAqh476_nDTt8BGXthR8r6yZgKNtxiUnkhqw?download=1
+				wget -N -O kernel-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EbQeSmPPMfRIrDgQcvhJgsgBpyJgAVRY1GZptaYlsziyig?download=1
 
 				yum install -y kernel-c7.rpm
 				yum install -y kernel-headers-c7.rpm
 			
-				kernel_version="5.6.4"
+				#kernel_version="5.6.12"
 			else
 				echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
 			fi	
 			
 		elif [[ ${version} = "8" ]]; then
-			wget -N -O kernel-c8.rpm https://github.com/ylx2016/kernel/releases/download/5.5.5/kernel-5.5.5-1-c8.x86_64.rpm
-			wget -N -O kernel-headers-c8.rpm https://github.com/ylx2016/kernel/releases/download/5.5.5/kernel-headers-5.5.5-1-c8.x86_64.rpm
+			wget -N -O kernel-c8.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/ETadaTIeeQJCgxEXKlOFiCEBsBa-Y15QbDkv-HQGo2EHSQ?download=1
+			wget -N -O kernel-headers-c8.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EZEZyLBjDplMgSqDzyaqkvYBW06OOKDCcIQq27381fa5-A?download=1
 
 			yum install -y kernel-c8.rpm
 			yum install -y kernel-headers-c8.rpm
 			
-			kernel_version="5.5.5"
+			#kernel_version="5.5.5"
 		fi
 	
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
 		if [[ "${release}" == "debian" ]]; then
 			if [[ ${version} = "8" ]]; then
 				if [[ ${bit} = "x86_64" ]]; then
-					wget -N -O linux-image-d8.deb https://github.com/ylx2016/kernel/releases/download/5.5.5/linux-image-5.5.5_5.5.5-1-d8_amd64.deb
-					wget -N -O linux-headers-d8.deb https://github.com/ylx2016/kernel/releases/download/5.5.5/linux-headers-5.5.5_5.5.5-1-d8_amd64.deb
+					wget -N -O linux-image-d8.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EeNpacEol0ZDk5S5ARJ1G7wBI6hF0q-C--Nonxq31lO1iw?download=1
+					wget -N -O linux-headers-d8.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EWmAacwLpdJPhs56m6KhxsEBnnZyqOPJggf-2XXHMfxCtw?download=1
 				
 					dpkg -i linux-image-d8.deb
 					dpkg -i linux-headers-d8.deb
 				
-					kernel_version="5.5.5"
+					#kernel_version="5.5.5"
 				else
 					echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
 				fi
 		
 			elif [[ ${version} = "9" ]]; then
 				if [[ ${bit} = "x86_64" ]]; then
-					wget -N -O linux-image-d9.deb https://github.com/ylx2016/kernel/releases/download/5.5.5/linux-image-5.5.5_5.5.5-1-d9_amd64.deb
-					wget -N -O linux-headers-d9.deb https://github.com/ylx2016/kernel/releases/download/5.5.5/linux-headers-5.5.5_5.5.5-1-d9_amd64.deb
+					wget -N -O linux-image-d9.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EWrsOGQzcqJOrLzeaqXBh0sBbs9Np7anhs5JULwFAliGBg?download=1
+					wget -N -O linux-headers-d9.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EbAGliMxbpZAtaqvjhcaexkB3owfi2PddFenWUEwMNkiXw?download=1
 				
 					dpkg -i linux-image-d9.deb
 					dpkg -i linux-headers-d9.deb
 				
-					kernel_version="5.5.5"
+					#kernel_version="5.5.5"
 				else
 					echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
 				fi
 			elif [[ ${version} = "10" ]]; then
 				if [[ ${bit} = "x86_64" ]]; then
-					wget -N -O linux-image-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EbN0hGGMPABJh_-XWnHUN60BpJzHxmkUHAALfhdsW9t9LA?download=1
-					wget -N -O linux-headers-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/Eazr1INQN15BpXvwBlZ7jAcBXvTqfBgUXIIS4FQzp_7xiw?download=1
+					wget -N -O linux-image-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/ET2PkFkQeSFMtpiIhK58xaoB01aH51XFPcMTv-OGCP92gA?download=1
+					wget -N -O linux-headers-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/Ec-uNmSW0iBOmUKbu-w2iS0BspktPBqgRjPMIqXcConmmA?download=1
 				
 					dpkg -i linux-image-d10.deb
 					dpkg -i linux-headers-d10.deb
 				
-					kernel_version="5.6.3"
+					#kernel_version="5.6.12"
 				else
 					echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
 				fi
@@ -105,38 +105,48 @@ installbbr(){
 		elif [[ "${release}" == "ubuntu" ]]; then
 			if [[ ${version} = "16" ]]; then
 				if [[ ${bit} = "x86_64" ]]; then
-					wget -N -O linux-image-u16.deb https://github.com/ylx2016/kernel/releases/download/5.4.14/linux-image-5.4.14_5.4.14-1-u16_amd64.deb
-					wget -N -O linux-headers-u16.deb https://github.com/ylx2016/kernel/releases/download/5.4.14/linux-headers-5.4.14_5.4.14-1-u16_amd64.deb
+					wget -N -O linux-image-u16.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/ERyDAcgbNptBjPGywtyy4zwB1S14VXAHEraobteVekwcNQ?download=1
+					wget -N -O linux-headers-u16.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/Eeka3lp7WAFOugowSi1F_eYBUXXdnx1dp1rI_aTg9XYtww?download=1
 				
 					dpkg -i linux-image-u16.deb
 					dpkg -i linux-headers-u16.deb
 				
-					kernel_version="5.4.14"
+					#kernel_version="5.4.14"
 				else
 					echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
 				fi
 		
 			elif [[ ${version} = "18" ]]; then
 				if [[ ${bit} = "x86_64" ]]; then
-					wget -N -O linux-image-u18.deb https://github.com/ylx2016/kernel/releases/download/5.4.14/linux-image-5.4.14_5.4.14-1-u18_amd64.deb
-					wget -N -O linux-headers-u18.deb https://github.com/ylx2016/kernel/releases/download/5.4.14/linux-headers-5.4.14_5.4.14-1-u18_amd64.deb
+					wget -N -O linux-image-u18.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/ERvqNJiLLrpKnLO9z3vCdZIB-GwZr2AKXO7t6dpTbEotmQ?download=1
+					wget -N -O linux-headers-u18.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EWZdQsfxE5lAvL3xTHxS9H4BjYijqpxP-TokL1hLag7PIw?download=1
 				
 					dpkg -i linux-image-u18.deb
 					dpkg -i linux-headers-u18.deb
 				
-					kernel_version="5.4.14"
+					#kernel_version="5.4.14"
 				else
 					echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
 				fi
 			elif [[ ${version} = "19" ]]; then
 				if [[ ${bit} = "x86_64" ]]; then
-					wget -N -O linux-image-u19.deb https://github.com/ylx2016/kernel/releases/download/5.4.14/linux-headers-5.4.14_5.4.14-1-u19_amd64.deb
-					wget -N -O linux-headers-u19.deb https://github.com/ylx2016/kernel/releases/download/5.4.14/linux-image-5.4.14_5.4.14-1-u19_amd64.deb
+					wget -N -O linux-image-u19.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/ESEgC1nVDmRFmQeJnSWujz4BYy-tnZa64EgX60dIQJjW9Q?download=1
+					wget -N -O linux-headers-u19.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EcsC0aEv8KBHhG3jwRaF8r4BLqvFwBLK5JGy83dfhdV-zQ?download=1
 				
 					dpkg -i linux-image-u19.deb
 					dpkg -i linux-headers-u19.deb
 				
-					kernel_version="5.4.14"
+					#kernel_version="5.4.14"
+				else
+					echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
+				fi
+			elif [[ ${version} = "20" ]]; then
+				if [[ ${bit} = "x86_64" ]]; then
+					wget -N -O linux-image-u20.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EYqsZWWiss1JvRW5gsfGxckBQhV1IiQgOqzlFmzUJAAdpg?download=1
+					wget -N -O linux-headers-u20.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/ESJMvds9OwRKlSPEoHYeMPcB4CIbP9rO3hcdGmzAsJqCVQ?download=1
+					dpkg -i linux-image-u20.deb
+					dpkg -i linux-headers-u20.deb
+					#kernel_version="5.4.14"
 				else
 					echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
 				fi
@@ -228,9 +238,9 @@ installlot(){
 		yum install -y http://${github}/lotserver/${release}/${version}/${bit}/kernel-headers-${kernel_version}.rpm
 		yum install -y http://${github}/lotserver/${release}/${version}/${bit}/kernel-devel-${kernel_version}.rpm
 	elif [[ "${release}" == "ubuntu" ]]; then
-		bash <(wget --no-check-certificate -qO- "http://${github}/Debian_Kernel.sh")
+		bash <(wget -qO- "https://${github}/Debian_Kernel.sh")
 	elif [[ "${release}" == "debian" ]]; then
-		bash <(wget --no-check-certificate -qO- "http://${github}/Debian_Kernel.sh")
+		bash <(wget -qO- "https://${github}/Debian_Kernel.sh")
 	fi
 	
 	#detele_kernel
@@ -465,20 +475,20 @@ installzen(){
 
 #安装bbrplus 新内核
 installbbrplusnew(){
-	kernel_version="4.14.173-bbrplus"
+	kernel_version="4.14.182-bbrplus"
 	bit=`uname -m`
 	rm -rf bbrplusnew
 	mkdir bbrplusnew && cd bbrplusnew
 	if [[ "${release}" == "centos" ]]; then
 		if [[ ${version} = "7" ]]; then
 			if [[ ${bit} = "x86_64" ]]; then
-				wget -N -O kernel-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EWu6fCx32KxEvBrWqe5pZbAB6Y13ogTMfMfPnQWzfQpmiQ?download=1
-				wget -N -O kernel-headers-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EZVCeWQA8rdMrNMysFO2V_0BJWB6Mlrc-IzLD_Xni4HuTQ?download=1
+				wget -N -O kernel-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EWtxHt1RiAlHgqERl5bvYzcBUrkKa_n1mWQ-uM2-Na7gmQ?download=1
+				wget -N -O kernel-headers-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EYkNoi17pKJBi7KnhUGRqEIBEK_26-bzkCL-fuQYZmrHWA?download=1
 				
 				yum install -y kernel-c7.rpm
 				yum install -y kernel-headers-c7.rpm
 			
-				kernel_version="4.14.173_bbrplus"
+				kernel_version="4.14.182_bbrplus"
 			else
 				echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
 			fi
@@ -486,13 +496,13 @@ installbbrplusnew(){
 	elif [[ "${release}" == "debian" ]]; then
 		if [[ ${version} = "10" ]]; then
 			if [[ ${bit} = "x86_64" ]]; then
-				wget -N -O linux-headers-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/ERSKfg1XkUJImM9fWZ3N8WwB3ygLGBzAT3-2Qf37UOokcw?download=1
-				wget -N -O linux-image-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EeSISwYaxadNr81olVZh_usBHwvnt0J6W__-4nV-AKY9HQ?download=1
+				wget -N -O linux-headers-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/Ef9pJn1wp-pBk4FIPxT1qBoBqpWhTVCawoKzEB0_vpiMRw?download=1
+				wget -N -O linux-image-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EaFJshr8za9Bq9FGjEBLds0B4ZfrYThLH8E35xe9-qWX_Q?download=1
 					
 				dpkg -i linux-image-d10.deb
 				dpkg -i linux-headers-d10.deb
 				
-				kernel_version="4.14.173-bbrplus"
+				kernel_version="4.14.182-bbrplus"
 			else
 				echo -e "${Error} 还在用32位内核，别再见了 !" && exit 1
 			fi		
@@ -521,7 +531,7 @@ startbbrfq(){
 	echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
 	echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
 	sysctl -p
-	echo -e "${Info}BBR+FQ启动成功！"
+	echo -e "${Info}BBR+FQ修改成功，重启生效！"
 }
 
 #启用BBR+cake
@@ -530,7 +540,7 @@ startbbrcake(){
 	echo "net.core.default_qdisc=cake" >> /etc/sysctl.conf
 	echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
 	sysctl -p
-	echo -e "${Info}BBR+cake启动成功！"
+	echo -e "${Info}BBR+cake修改成功，重启生效！"
 }
 
 #启用BBRplus
@@ -539,7 +549,7 @@ startbbrplus(){
 	echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
 	echo "net.ipv4.tcp_congestion_control=bbrplus" >> /etc/sysctl.conf
 	sysctl -p
-	echo -e "${Info}BBRplus启动成功！"
+	echo -e "${Info}BBRplus修改成功，重启生效！"
 }
 
 #启用Lotserver
@@ -551,7 +561,7 @@ startlotserver(){
 		apt-get update
 		apt-get install ethtool
 	fi
-	bash <(wget --no-check-certificate -qO- https://git.io/lotServerInstall.sh) install
+	bash <(wget -qO- https://git.io/lotServerInstall.sh) install
 	sed -i '/advinacc/d' /appex/etc/config
 	sed -i '/maxmode/d' /appex/etc/config
 	echo -e "advinacc=\"1\"
@@ -567,7 +577,7 @@ startbbr2fq(){
 	echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
 	echo "net.ipv4.tcp_congestion_control=bbr2" >> /etc/sysctl.conf
 	sysctl -p
-	echo -e "${Info}BBR2启动成功！"
+	echo -e "${Info}BBR2修改成功，重启生效！"
 }
 
 #启用BBR2+CAKE
@@ -577,7 +587,7 @@ startbbr2cake(){
 	echo "net.core.default_qdisc=cake" >> /etc/sysctl.conf
 	echo "net.ipv4.tcp_congestion_control=bbr2" >> /etc/sysctl.conf
 	sysctl -p
-	echo -e "${Info}BBR2启动成功！"
+	echo -e "${Info}BBR2修改成功，重启生效！"
 }
 
 #启用BBR2+FQ+ecn
@@ -587,7 +597,7 @@ startbbr2fqecn(){
 	echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
 	echo "net.ipv4.tcp_congestion_control=bbr2" >> /etc/sysctl.conf
 	sysctl -p
-	echo -e "${Info}BBR2启动成功！"
+	echo -e "${Info}BBR2修改成功，重启生效！"
 }
 
 #启用BBR2+CAKE+ecn
@@ -597,7 +607,7 @@ startbbr2cakeecn(){
 	echo "net.core.default_qdisc=cake" >> /etc/sysctl.conf
 	echo "net.ipv4.tcp_congestion_control=bbr2" >> /etc/sysctl.conf
 	sysctl -p
-	echo -e "${Info}BBR2启动成功！"
+	echo -e "${Info}BBR2修改成功，重启生效！"
 }
 
 
@@ -644,7 +654,7 @@ remove_all(){
 	sed -i '/net.ipv4.tcp_timestamps/d' /etc/sysctl.conf
 	sed -i '/net.ipv4.tcp_max_orphans/d' /etc/sysctl.conf
 	if [[ -e /appex/bin/lotServer.sh ]]; then
-		bash <(wget --no-check-certificate -qO- https://git.io/lotServerInstall.sh) uninstall
+		bash <(wget -qO- https://git.io/lotServerInstall.sh) uninstall
 	fi
 	clear
 	echo -e "${Info}:清除加速完成。"
@@ -706,14 +716,14 @@ net.ipv4.ip_forward = 1">>/etc/sysctl.conf
 #更新脚本
 Update_Shell(){
 	echo -e "当前版本为 [ ${sh_ver} ]，开始检测最新版本..."
-	sh_new_ver=$(wget --no-check-certificate -qO- "https://${github}/tcpx.sh"|grep 'sh_ver="'|awk -F "=" '{print $NF}'|sed 's/\"//g'|head -1)
+	sh_new_ver=$(wget -qO- "https://${github}/tcpx.sh"|grep 'sh_ver="'|awk -F "=" '{print $NF}'|sed 's/\"//g'|head -1)
 	[[ -z ${sh_new_ver} ]] && echo -e "${Error} 检测最新版本失败 !" && start_menu
 	if [[ ${sh_new_ver} != ${sh_ver} ]]; then
 		echo -e "发现新版本[ ${sh_new_ver} ]，是否更新？[Y/n]"
 		read -p "(默认: y):" yn
 		[[ -z "${yn}" ]] && yn="y"
 		if [[ ${yn} == [Yy] ]]; then
-			wget -N --no-check-certificate http://${github}/tcpx.sh && chmod +x tcp.sh
+			wget -N "https://${github}/tcpx.sh" && chmod +x tcp.sh
 			echo -e "脚本已更新为最新版本[ ${sh_new_ver} ] !"
 		else
 			echo && echo "	已取消..." && echo
@@ -727,7 +737,7 @@ Update_Shell(){
 #切换到卸载内核版本
 gototcp(){
 	clear
-	wget -N --no-check-certificate "https://github.000060000.xyz/tcp.sh" && chmod +x tcp.sh && ./tcp.sh
+	wget -N "https://github.000060000.xyz/tcp.sh" && chmod +x tcp.sh && ./tcp.sh
 }
 
 #开始菜单
@@ -735,17 +745,18 @@ start_menu(){
 clear
 echo && echo -e " TCP加速 一键安装管理脚本 不卸载内核版本 ${Red_font_prefix}[v${sh_ver}]${Font_color_suffix}
  更新内容及反馈:  https://blog.ylx.me/archives/783.html
+ 母鸡慎用
   
  ${Green_font_prefix}0.${Font_color_suffix} 升级脚本
  ${Green_font_prefix}9.${Font_color_suffix} 切换到卸载内核版本
 ————————————内核管理————————————
- ${Green_font_prefix}1.${Font_color_suffix} 安装 BBR原版内核 - 5.4.14/5.5.5/5.6.3/5.6.4
+ ${Green_font_prefix}1.${Font_color_suffix} 安装 BBR原版内核 - 5.6.15
  ${Green_font_prefix}2.${Font_color_suffix} 安装 BBRplus版内核 - 4.14.129
  ${Green_font_prefix}3.${Font_color_suffix} 安装 Lotserver(锐速)内核 - 多种
  ${Green_font_prefix}4.${Font_color_suffix} 安装 xanmod版内核 - 5.5.1/5.5.8
  ${Green_font_prefix}5.${Font_color_suffix} 安装 BBR2测试版内核 - 5.4.0
  ${Green_font_prefix}6.${Font_color_suffix} 安装 Zen版内核 - 5.5.2/5.5.10
- ${Green_font_prefix}7.${Font_color_suffix} 安装 BBRplus新版内核 - 4.14.173
+ ${Green_font_prefix}7.${Font_color_suffix} 安装 BBRplus新版内核 - 4.14.182
 ————————————加速管理————————————
  ${Green_font_prefix}11.${Font_color_suffix} 使用BBR+FQ加速
  ${Green_font_prefix}12.${Font_color_suffix} 使用BBR+CAKE加速 
@@ -890,7 +901,7 @@ BBR_grub(){
             if [ -f "/boot/grub2/grub.cfg" ]; then
 				grub2-mkconfig  -o   /boot/grub2/grub.cfg
 				grub2-set-default 0
-                exit 1
+	    exit 1
 			elif [ -f "/boot/efi/EFI/centos/grub.cfg" ]; then
 				grub2-mkconfig  -o   /boot/efi/EFI/centos/grub.cfg
 				grub2-set-default 0
@@ -975,7 +986,7 @@ check_sys_bbr(){
 			echo -e "${Error} BBR内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
 		fi
 	elif [[ "${release}" == "ubuntu" ]]; then
-		if [[ ${version} = "16" || ${version} = "18" || ${version} = "19" ]]; then
+		if [[ ${version} = "16" || ${version} = "18" || ${version} = "19" || ${version} = "20" ]]; then
 			installbbr
 		else
 			echo -e "${Error} BBR内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
@@ -1147,7 +1158,7 @@ check_status(){
 	net_congestion_control=`cat /proc/sys/net/ipv4/tcp_congestion_control | awk '{print $1}'`
 	net_qdisc=`cat /proc/sys/net/core/default_qdisc | awk '{print $1}'`
 	kernel_version_r=`uname -r | awk '{print $1}'`
-	if [[ ${kernel_version_full} = "4.14.168-bbrplus" || ${kernel_version_full} = "4.14.98-bbrplus" || ${kernel_version_full} = "4.14.129-bbrplus" || ${kernel_version_full} = "4.14.160-bbrplus" || ${kernel_version_full} = "4.14.166-bbrplus" || ${kernel_version_full} = "4.14.161-bbrplus" ]]; then
+	if [[ ${kernel_version_full} = "4.14.182-bbrplus" || ${kernel_version_full} = "4.14.168-bbrplus" || ${kernel_version_full} = "4.14.98-bbrplus" || ${kernel_version_full} = "4.14.129-bbrplus" || ${kernel_version_full} = "4.14.160-bbrplus" || ${kernel_version_full} = "4.14.166-bbrplus" || ${kernel_version_full} = "4.14.161-bbrplus" ]]; then
 		kernel_status="BBRplus"
 	elif [[ ${kernel_version} = "3.10.0" || ${kernel_version} = "3.16.0" || ${kernel_version} = "3.2.0" || ${kernel_version} = "4.4.0" || ${kernel_version} = "3.13.0"  || ${kernel_version} = "2.6.32" || ${kernel_version} = "4.9.0" || ${kernel_version} = "4.11.2" ]]; then
 		kernel_status="Lotserver"
