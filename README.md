@@ -5,14 +5,14 @@ centos：yum install ca-certificates wget -y && update-ca-trust force-enable
 debian/ubuntu：apt-get install ca-certificates wget -y && update-ca-certificates
 
 不卸载内核版本
-wget -N "https://github.000060000.xyz/tcpx.sh" && chmod +x tcpx.sh && ./tcpx.sh
+wget -O tcpx.sh "https://git.io/JYxKU" && chmod +x tcpx.sh && ./tcpx.sh
 卸载内核版本
-wget -N "https://github.000060000.xyz/tcp.sh" && chmod +x tcp.sh && ./tcp.sh
+wget -O tcp.sh "https://git.io/coolspeeda" && chmod +x tcp.sh && ./tcp.sh
 
 双持bbr+锐速
 bbr 添加
-echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
-echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
+echo "net.core.default_qdisc=fq" >> /etc/sysctl.d/99-sysctl.conf
+echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.d/99-sysctl.conf
 sysctl -p
 
 编辑锐速文件
@@ -51,6 +51,8 @@ bbsplus算法原作者
 https://blog.csdn.net/dog250/article/details/80629551
 bbrplus首用名 ？
 https://github.com/cx9208/bbrplus
+新版bbrplus
+https://github.com/UJX6N/bbrplus-5.10
 xanmod官网
 https://xanmod.org
 Zen官网

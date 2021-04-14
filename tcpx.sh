@@ -4,7 +4,7 @@ export PATH
 #=================================================
 #	System Required: CentOS 7/8,Debian/ubuntu,oraclelinux
 #	Description: BBR+BBRplus+Lotserver
-#	Version: 1.3.2.73
+#	Version: 1.3.2.79
 #	Author: 千影,cx9208,YLX
 #	更新内容及反馈:  https://blog.ylx.me/archives/783.html
 #=================================================
@@ -15,13 +15,27 @@ export PATH
 # SKYBLUE='\033[0;36m'
 # PLAIN='\033[0m'
 
-sh_ver="1.3.2.73"
+sh_ver="1.3.2.79"
 github="github.000060000.xyz"
+
+imgurl=""
+headurl=""
 
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
 Info="${Green_font_prefix}[信息]${Font_color_suffix}"
 Error="${Red_font_prefix}[错误]${Font_color_suffix}"
 Tip="${Green_font_prefix}[注意]${Font_color_suffix}"
+
+#检查连接
+checkurl(){
+	url=$(curl --max-time 5 --retry 3 --retry-delay 2 --connect-timeout 2 -s --head $1 | head -n 1)
+			if [[ ${url} == *200* || ${url} == *302* || ${url} == *308* ]]; then
+				echo "下载地址检查OK，继续！"
+			else
+				echo "下载地址检查出错，退出！"
+				exit 1
+			fi
+}
 
 #安装BBR内核
 installbbr(){
@@ -31,26 +45,23 @@ installbbr(){
 	mkdir bbr && cd bbr
 	
 	if [[ "${release}" == "centos" ]]; then
-		# if [[ ${version} = "6" ]]; then
-			# if [[ ${bit} = "x86_64" ]]; then
-				# wget -N -O kernel-headers-c6.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EUCmObDQnMZEmKnhxS67sJkBG8kjbx0bjNF-XwTtzvgtAA?download=1
-				# wget -N -O kernel-c6.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EeC72joP3HVNmrIbjlPg_coBs7kj29Md4f9psAjZOuqOdg?download=1
-			
-				# yum install -y kernel-c6.rpm
-				# yum install -y kernel-headers-c6.rpm
-			
-				# kernel_version="5.5.5"
-			# else
-				# echo -e "${Error} 还在用32位，别再见了 !" && exit 1
-			# fi
-		
 		if [[ ${version} = "7" ]]; then
 			if [[ ${bit} = "x86_64" ]]; then
-				kernel_version="5.11.4"
+				echo -e "如果下载地址出错，可能当前正在更新，超过半天还是出错请反馈 大陆自行解决污染问题"
+				github_centos_ver=$(curl -s 'https://github.com/ylx2016/kernel/releases' | grep 'Centos_Kernel' | grep '_latest_bbr_' | head -n 1 | awk -F '"' '{print $2}' | awk -F '_' '{print $3}')
+				github_centos_tag=$(curl -s 'https://github.com/ylx2016/kernel/releases' | grep 'Centos_Kernel' | grep '_latest_bbr_' | head -n 1 | awk -F '/' '{print $5}' | awk -F '"' '{print $1}')
+				# kernel_version="5.11.4"
+				echo -e "获取的版本号为:${github_centos_ver}"
+				kernel_version=$github_centos_ver
 				detele_kernel_head
-				wget -N -O kernel-headers-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/Ee9Aix11R_hAji_ZjgoVQlEBcHN-HVo8Xmf-eTfePeuwyQ?download=1
-				wget -N -O kernel-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EfArJR7pT4xCkrfIszp__ggBBcs12hFyz6PdRevFAcDDzw?download=1
-				
+				headurl=https://github.com/ylx2016/kernel/releases/download/$github_centos_tag/kernel-headers-${github_centos_ver}-1.x86_64.rpm
+				imgurl=https://github.com/ylx2016/kernel/releases/download/$github_centos_tag/kernel-${github_centos_ver}-1.x86_64.rpm
+				echo -e "正在检查headers下载连接...."
+				checkurl $headurl
+				echo -e "正在检查内核下载连接...."
+				checkurl $imgurl
+				wget -N -O kernel-headers-c7.rpm $headurl
+				wget -N -O kernel-c7.rpm $imgurl
 				yum install -y kernel-c7.rpm
 				yum install -y kernel-headers-c7.rpm
 			else
@@ -60,25 +71,84 @@ installbbr(){
 		elif [[ ${version} = "8" ]]; then
 			kernel_version="5.6.15"
 			detele_kernel_head
-			wget -N -O kernel-c8.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/ETadaTIeeQJCgxEXKlOFiCEBsBa-Y15QbDkv-HQGo2EHSQ?download=1
-			wget -N -O kernel-headers-c8.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EZEZyLBjDplMgSqDzyaqkvYBW06OOKDCcIQq27381fa5-A?download=1
-
+			headurl=https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EZEZyLBjDplMgSqDzyaqkvYBW06OOKDCcIQq27381fa5-A?download=1
+			imgurl=https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/ETadaTIeeQJCgxEXKlOFiCEBsBa-Y15QbDkv-HQGo2EHSQ?download=1
+			echo -e "正在检查headers下载连接...."
+			checkurl $headurl
+			echo -e "正在检查内核下载连接...."
+			checkurl $imgurl
+			wget -N -O kernel-headers-c8.rpm $headurl
+			wget -N -O kernel-c8.rpm $imgurl
 			yum install -y kernel-c8.rpm
 			yum install -y kernel-headers-c8.rpm
 		fi
 	
-	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
+	# elif [[ "${release}" == "ubuntu" ]]; then
+		# if [[ ${bit} = "x86_64" ]]; then
+			# ubuntu_ver=$(curl -s https://kernel.ubuntu.com/~kernel-ppa/mainline/ | awk -F'\"v' '/v[4-9]./{print $2}' | cut -d/ -f1 | grep -v - | sort -V | tail -1)
+			# echo -e "获取的内核版本号为：${ubuntu_ver}"
+			# kernel_version=$ubuntu_ver
+			# detele_kernel_head
+			# headurl=https://kernel.ubuntu.com/~kernel-ppa/mainline/v$ubuntu_ver/$(curl -s https://kernel.ubuntu.com/~kernel-ppa/mainline/v${ubuntu_ver}/ | grep "linux-headers" | grep "generic" | awk -F'\">' '/amd64.deb/{print $2}' | cut -d'<' -f1 | head -1)
+			# imgurl=https://kernel.ubuntu.com/~kernel-ppa/mainline/v$ubuntu_ver/$(curl -s https://kernel.ubuntu.com/~kernel-ppa/mainline/v${ubuntu_ver}/ | grep "linux-image" | grep "generic" | awk -F'\">' '/amd64.deb/{print $2}' | cut -d'<' -f1 | head -1)
+			# echo -e $headurl
+			# echo -e $imgurl
+			# echo -e "正在检查headers下载连接...."
+			# checkurl $headurl
+			# echo -e "正在检查内核下载连接...."
+			# checkurl $imgurl
+			# wget -N -O linux-headers-d10.deb $headurl
+			# wget -N -O linux-image-d10.deb $imgurl
+			# dpkg -i linux-image-d10.deb
+			# dpkg -i linux-headers-d10.deb
+		# else
+			# echo -e "${Error} 还在用32位，别再见了 !" && exit 1	
+		# fi
+		
+	elif [[ "${release}" == "ubuntu" || "${release}" == "debian" ]]; then
 		if [[ ${bit} = "x86_64" ]]; then
-			kernel_version="5.11.4"
+			echo -e "如果下载地址出错，可能当前正在更新，超过半天还是出错请反馈 大陆自行解决污染问题"
+			github_ubuntu_ver=$(curl -s 'https://github.com/ylx2016/kernel/releases' | grep 'Ubuntu_Kernel' | grep '_latest_bbr_' | head -n 1 | awk -F '"' '{print $2}' | awk -F '_' '{print $3}')
+			github_ubuntu_tag=$(curl -s 'https://github.com/ylx2016/kernel/releases' | grep 'Ubuntu_Kernel' | grep '_latest_bbr_' | head -n 1 | awk -F '/' '{print $5}' | awk -F '"' '{print $1}')
+			# kernel_version="5.11.4"
+			echo -e "获取的版本号为:${github_ubuntu_ver}"
+			kernel_version=$github_ubuntu_ver
 			detele_kernel_head
-			wget -N -O linux-headers-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/Ecf2jKD5wSJDjuXn6r58bzIBV6ng3oaiOZYmSd3XQyr3vg?download=1
-			wget -N -O linux-image-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EaYu3pW-bxJMrBvOuLya148B9U4ALTM77uU_Sdr6uFDHqg?download=1
-				
+			headurl=https://github.com/ylx2016/kernel/releases/download/$github_ubuntu_tag/linux-headers-${github_ubuntu_ver}_${github_ubuntu_ver}-1_amd64.deb
+			imgurl=https://github.com/ylx2016/kernel/releases/download/$github_ubuntu_tag/linux-image-${github_ubuntu_ver}_${github_ubuntu_ver}-1_amd64.deb
+			echo -e "正在检查headers下载连接...."
+			checkurl $headurl
+			echo -e "正在检查内核下载连接...."
+			checkurl $imgurl
+			wget -N -O linux-headers-d10.deb $headurl
+			wget -N -O linux-image-d10.deb $imgurl
 			dpkg -i linux-image-d10.deb
 			dpkg -i linux-headers-d10.deb
 		else
 			echo -e "${Error} 还在用32位，别再见了 !" && exit 1	
 		fi	
+		
+	# elif [[ "${release}" == "debian" ]]; then
+		# if [[ ${bit} = "x86_64" ]]; then
+			# debian_ver=$(curl -s http://http.us.debian.org/debian/pool/main/l/linux-signed-amd64/ | grep 'linux-image' | grep -v 'cloud' | grep -v 'rt' | grep -v 'bpo' | grep -v 'rt' | grep -v 'linux-image-amd64' | tail -1 | awk -F '>' '{print $7}' | awk -F '<' '{print $1}' | awk -F '[-]' '{print $5}' | awk -F '[_]' '{print $2}')
+			
+			# echo -e "获取的内核版本号为：${debian_ver}"
+			# kernel_version=$debian_ver
+			# detele_kernel_head
+		
+			# headurl=http://ftp.debian.org/debian/pool/main/l/linux-signed-amd64/$(curl -s http://http.us.debian.org/debian/pool/main/l/linux-signed-amd64/ | grep 'linux-headers' | grep -v 'cloud' | grep -v 'rt' | grep -v 'bpo' | grep -v 'rt' | grep -v 'linux-image-amd64' | tail -1 | awk -F '>' '{print $7}' | awk -F '<' '{print $1}')
+			# imgurl=http://ftp.debian.org/debian/pool/main/l/linux-signed-amd64/$(curl -s http://http.us.debian.org/debian/pool/main/l/linux-signed-amd64/ | grep 'linux-image' | grep -v 'cloud' | grep -v 'rt' | grep -v 'bpo' | grep -v 'rt' | grep -v 'linux-image-amd64' | tail -1 | awk -F '>' '{print $7}' | awk -F '<' '{print $1}')
+			# echo -e "正在检查headers下载连接...."
+			# checkurl $headurl
+			# echo -e "正在检查内核下载连接...."
+			# checkurl $imgurl
+			# wget -N -O linux-headers-d10.deb $headurl
+			# wget -N -O linux-image-d10.deb $imgurl
+			# dpkg -i linux-image-d10.deb
+			# dpkg -i linux-headers-d10.deb
+		# else
+			# echo -e "${Error} 还在用32位，别再见了 !" && exit 1	
+		# fi	
 	fi
 	
 	cd .. && rm -rf bbr	
@@ -98,21 +168,32 @@ installbbrplus(){
 			if [[ ${bit} = "x86_64" ]]; then
 				kernel_version="4.14.129_bbrplus"
 				detele_kernel_head
-				wget -N -O kernel-headers-c7.rpm https://github.com/cx9208/Linux-NetSpeed/raw/master/bbrplus/centos/7/kernel-headers-4.14.129-bbrplus.rpm
-				wget -N -O kernel-c7.rpm https://github.com/cx9208/Linux-NetSpeed/raw/master/bbrplus/centos/7/kernel-4.14.129-bbrplus.rpm
-				
+				headurl=https://github.com/cx9208/Linux-NetSpeed/raw/master/bbrplus/centos/7/kernel-headers-4.14.129-bbrplus.rpm
+				imgurl=https://github.com/cx9208/Linux-NetSpeed/raw/master/bbrplus/centos/7/kernel-4.14.129-bbrplus.rpm
+				echo -e "正在检查headers下载连接...."
+				checkurl $headurl
+				echo -e "正在检查内核下载连接...."
+				checkurl $imgurl
+				wget -N -O kernel-headers-c7.rpm $headurl
+				wget -N -O kernel-c7.rpm $imgurl
 				yum install -y kernel-c7.rpm
 				yum install -y kernel-headers-c7.rpm
 			else
-					echo -e "${Error} 还在用32位，别再见了 !" && exit 1
+				echo -e "${Error} 还在用32位，别再见了 !" && exit 1
 			fi
 		fi	
 		
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
 		kernel_version="4.14.129-bbrplus"
 		detele_kernel_head
-		wget -N -O linux-headers.deb https://github.com/cx9208/Linux-NetSpeed/raw/master/bbrplus/debian-ubuntu/x64/linux-headers-4.14.129-bbrplus.deb
-		wget -N -O linux-image.deb https://github.com/cx9208/Linux-NetSpeed/raw/master/bbrplus/debian-ubuntu/x64/linux-image-4.14.129-bbrplus.deb
+		headurl=https://github.com/cx9208/Linux-NetSpeed/raw/master/bbrplus/debian-ubuntu/x64/linux-headers-4.14.129-bbrplus.deb
+		imgurl=https://github.com/cx9208/Linux-NetSpeed/raw/master/bbrplus/debian-ubuntu/x64/linux-image-4.14.129-bbrplus.deb
+		echo -e "正在检查headers下载连接...."
+		checkurl $headurl
+		echo -e "正在检查内核下载连接...."
+		checkurl $imgurl
+		wget -N -O linux-headers.deb $headurl
+		wget -N -O linux-image.deb $imgurl
 		
 		dpkg -i linux-image.deb
 		dpkg -i linux-headers.deb
@@ -133,10 +214,102 @@ installlot(){
 		yum remove -y kernel-headers
 		yum install -y http://${github}/lotserver/${release}/${version}/${bit}/kernel-headers-${kernel_version}.rpm
 		yum install -y http://${github}/lotserver/${release}/${version}/${bit}/kernel-devel-${kernel_version}.rpm
-	elif [[ "${release}" == "ubuntu" ]]; then
-		bash <(wget -qO- "https://${github}/Debian_Kernel.sh")
-	elif [[ "${release}" == "debian" ]]; then
-		bash <(wget -qO- "https://${github}/Debian_Kernel.sh")
+	fi
+	
+	if [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
+		deb_issue="$(cat /etc/issue)"
+		deb_relese="$(echo $deb_issue |grep -io 'Ubuntu\|Debian' |sed -r 's/(.*)/\L\1/')"
+		os_ver="$(dpkg --print-architecture)"
+		[ -n "$os_ver" ] || exit 1
+		if [ "$deb_relese" == 'ubuntu' ]; then
+			deb_ver="$(echo $deb_issue |grep -o '[0-9]*\.[0-9]*' |head -n1)"
+			if [ "$deb_ver" == "14.04" ]; then
+				kernel_version="3.16.0-77-generic" && item="3.16.0-77-generic" && ver='trusty'
+			elif [ "$deb_ver" == "16.04" ]; then
+				kernel_version="4.8.0-36-generic" && item="4.8.0-36-generic" && ver='xenial'
+			elif [ "$deb_ver" == "18.04" ]; then
+				kernel_version="4.15.0-30-generic" && item="4.15.0-30-generic" && ver='bionic'
+			else
+				exit 1
+			fi
+		url='archive.ubuntu.com'
+		urls='security.ubuntu.com'
+		elif [ "$deb_relese" == 'debian' ]; then
+			deb_ver="$(echo $deb_issue |grep -o '[0-9]*' |head -n1)"
+			if [ "$deb_ver" == "7" ]; then
+				kernel_version="3.2.0-4-${os_ver}" && item="3.2.0-4-${os_ver}" && ver='wheezy' && url='archive.debian.org' && urls='archive.debian.org'
+			elif [ "$deb_ver" == "8" ]; then
+				kernel_version="3.16.0-4-${os_ver}" && item="3.16.0-4-${os_ver}" && ver='jessie' && url='archive.debian.org' && urls='deb.debian.org'
+			elif [ "$deb_ver" == "9" ]; then
+				kernel_version="4.9.0-4-${os_ver}" && item="4.9.0-4-${os_ver}" && ver='stretch' && url='deb.debian.org' && urls='deb.debian.org'
+			else
+				exit 1
+			fi
+		fi	
+		[ -n "$item" ] && [ -n "$urls" ] && [ -n "$url" ] && [ -n "$ver" ] || exit 1
+		if [ "$deb_relese" == 'ubuntu' ]; then
+			echo "deb http://${url}/${deb_relese} ${ver} main restricted universe multiverse" >/etc/apt/sources.list
+			echo "deb http://${url}/${deb_relese} ${ver}-updates main restricted universe multiverse" >>/etc/apt/sources.list
+			echo "deb http://${url}/${deb_relese} ${ver}-backports main restricted universe multiverse" >>/etc/apt/sources.list
+			echo "deb http://${urls}/${deb_relese} ${ver}-security main restricted universe multiverse" >>/etc/apt/sources.list
+		
+			apt-get update
+			apt-get install --no-install-recommends -y linux-image-${item}
+		elif [ "$deb_relese" == 'debian' ]; then
+			echo "deb http://${url}/${deb_relese} ${ver} main" >/etc/apt/sources.list
+			echo "deb-src http://${url}/${deb_relese} ${ver} main" >>/etc/apt/sources.list
+			echo "deb http://${urls}/${deb_relese}-security ${ver}/updates main" >>/etc/apt/sources.list
+			echo "deb-src http://${urls}/${deb_relese}-security ${ver}/updates main" >>/etc/apt/sources.list
+
+			if [ "$deb_ver" == "8" ]; then
+				dpkg -l |grep -q 'linux-base' || {
+				wget --no-check-certificate -qO '/tmp/linux-base_3.5_all.deb' 'http://snapshot.debian.org/archive/debian/20120304T220938Z/pool/main/l/linux-base/linux-base_3.5_all.deb'
+				dpkg -i '/tmp/linux-base_3.5_all.deb'
+				} 
+				wget --no-check-certificate -qO '/tmp/linux-image-3.16.0-4-amd64_3.16.43-2+deb8u5_amd64.deb' 'http://snapshot.debian.org/archive/debian/20171008T163152Z/pool/main/l/linux/linux-image-3.16.0-4-amd64_3.16.43-2+deb8u5_amd64.deb'
+				dpkg -i '/tmp/linux-image-3.16.0-4-amd64_3.16.43-2+deb8u5_amd64.deb'
+	
+				if [ $? -ne 0 ]; then
+					exit 1
+				fi
+			elif [ "$deb_ver" == "9" ]; then
+				dpkg -l |grep -q 'linux-base' || {
+				wget --no-check-certificate -qO '/tmp/linux-base_4.5_all.deb' 'http://snapshot.debian.org/archive/debian/20160917T042239Z/pool/main/l/linux-base/linux-base_4.5_all.deb'
+				dpkg -i '/tmp/linux-base_4.5_all.deb'
+				} 
+				wget --no-check-certificate -qO '/tmp/linux-image-4.9.0-4-amd64_4.9.65-3+deb9u1_amd64.deb' 'http://snapshot.debian.org/archive/debian/20171224T175424Z/pool/main/l/linux/linux-image-4.9.0-4-amd64_4.9.65-3+deb9u1_amd64.deb'
+				dpkg -i '/tmp/linux-image-4.9.0-4-amd64_4.9.65-3+deb9u1_amd64.deb'
+				##备选
+				#https://sys.if.ci/download/linux-image-4.9.0-4-amd64_4.9.65-3+deb9u1_amd64.deb
+				#http://mirror.cs.uchicago.edu/debian-security/pool/updates/main/l/linux/linux-image-4.9.0-4-amd64_4.9.65-3+deb9u1_amd64.deb
+				#https://debian.sipwise.com/debian-security/pool/main/l/linux/linux-image-4.9.0-4-amd64_4.9.65-3+deb9u1_amd64.deb
+				#http://srv24.dsidata.sk/security.debian.org/pool/updates/main/l/linux/linux-image-4.9.0-4-amd64_4.9.65-3+deb9u1_amd64.deb
+				#https://pubmirror.plutex.de/debian-security/pool/updates/main/l/linux/linux-image-4.9.0-4-amd64_4.9.65-3+deb9u1_amd64.deb
+				#https://packages.mendix.com/debian/pool/main/l/linux/linux-image-4.9.0-4-amd64_4.9.65-3_amd64.deb
+				#http://snapshot.debian.org/archive/debian/20171224T175424Z/pool/main/l/linux/linux-image-4.9.0-4-amd64_4.9.65-3+deb9u1_amd64.deb
+				#http://snapshot.debian.org/archive/debian/20171231T180144Z/pool/main/l/linux/linux-image-4.9.0-4-amd64_4.9.65-3_amd64.deb
+				if [ $? -ne 0 ]; then
+					exit 1
+				fi
+			else
+				exit 1
+			fi
+		fi
+		# while true; do
+			# List_Kernel="$(dpkg -l |grep 'linux-image\|linux-modules\|linux-generic\|linux-headers' |grep -v "$item")"
+			# Num_Kernel="$(echo "$List_Kernel" |sed '/^$/d' |wc -l)"
+			# [ "$Num_Kernel" -eq "0" ] && break
+			# for kernel in `echo "$List_Kernel" |awk '{print $2}'`
+			# do
+				# if [ -f "/var/lib/dpkg/info/${kernel}.prerm" ]; then
+					# sed -i 's/linux-check-removal/#linux-check-removal/' "/var/lib/dpkg/info/${kernel}.prerm"
+					# sed -i 's/uname -r/echo purge/' "/var/lib/dpkg/info/${kernel}.prerm"
+				# fi
+				# dpkg --force-depends --purge "$kernel"
+			# done
+		# done
+		apt-get autoremove -y
+		[ -d '/var/lib/apt/lists' ] && find /var/lib/apt/lists -type f -delete
 	fi
 	
 	BBR_grub
@@ -154,9 +327,14 @@ installxanmod(){
 			if [[ ${bit} = "x86_64" ]]; then
 				kernel_version="5.11.4_xanmod"
 				detele_kernel_head
-				wget -N -O kernel-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EZX-L0X9BxlKkqhD5-CwJhYBr86Xp87WVNoTU6rRoKBLHA?download=1
-				wget -N -O kernel-headers-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EVx_iPuUUQVCoUuqcFLv5Z0B6wlxmMXcFfwCxOst3FjYBA?download=1
-				
+				headurl=https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EVx_iPuUUQVCoUuqcFLv5Z0B6wlxmMXcFfwCxOst3FjYBA?download=1
+				imgurl=https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EZX-L0X9BxlKkqhD5-CwJhYBr86Xp87WVNoTU6rRoKBLHA?download=1
+				echo -e "正在检查headers下载连接...."
+				checkurl $headurl
+				echo -e "正在检查内核下载连接...."
+				checkurl $imgurl
+				wget -N -O kernel-headers-c7.rpm $headurl
+				wget -N -O kernel-c7.rpm $imgurl
 				yum install -y kernel-c7.rpm
 				yum install -y kernel-headers-c7.rpm			
 			else
@@ -165,15 +343,51 @@ installxanmod(){
 		elif [[ ${version} = "8" ]]; then
 				kernel_version="5.5.1_xanmod1"
 				detele_kernel_head
-				wget -N -O kernel-c8.rpm https://github.com/ylx2016/kernel/releases/download/5.5.1xanmod/kernel-5.5.1_xanmod1-1-c8.x86_64.rpm
-				wget -N -O kernel-headers-c8.rpm https://github.com/ylx2016/kernel/releases/download/5.5.1xanmod/kernel-headers-5.5.1_xanmod1-1-c8.x86_64.rpm
-				
+				headurl=https://github.com/ylx2016/kernel/releases/download/5.5.1xanmod/kernel-headers-5.5.1_xanmod1-1-c8.x86_64.rpm
+				imgurl=https://github.com/ylx2016/kernel/releases/download/5.5.1xanmod/kernel-5.5.1_xanmod1-1-c8.x86_64.rpm
+				echo -e "正在检查headers下载连接...."
+				checkurl $headurl
+				echo -e "正在检查内核下载连接...."
+				checkurl $imgurl
+				wget -N -O kernel-headers-c8.rpm $headurl
+				wget -N -O kernel-c8.rpm $imgurl
 				yum install -y kernel-c8.rpm
 				yum install -y kernel-headers-c8.rpm
 		fi
 		
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
-		check_sys_official_xanmod
+	
+		if [[ ${bit} = "x86_64" ]]; then
+			# kernel_version="5.11.4-xanmod"
+			# xanmod_ver_b=$(rm -rf /tmp/url.tmp && curl -o /tmp/url.tmp 'https://dl.xanmod.org/dl/changelog/?C=N;O=D' && grep folder.gif /tmp/url.tmp | head -n 1 | awk -F "[/]" '{print $5}' | awk -F "[>]" '{print $2}')
+			# xanmod_ver_s=$(rm -rf /tmp/url.tmp && curl -o /tmp/url.tmp 'https://dl.xanmod.org/changelog/${xanmod_ver_b}/?C=M;O=D' && grep $xanmod_ver_b /tmp/url.tmp | head -n 3 | awk -F "[-]" '{print $2}')
+			sourceforge_xanmod_stable_ver=$(curl -s https://sourceforge.net/projects/xanmod/files/releases/stable/ | grep 'class="folder ">' | head -n 1 | awk -F '"' '{print $2}')
+			sourceforge_xanmod_stable_file_img=$(curl -s https://sourceforge.net/projects/xanmod/files/releases/stable/${sourceforge_xanmod_stable_ver}/ | grep 'linux-image' | head -n 1 | awk -F '"' '{print $2}')
+			sourceforge_xanmod_stable_file_head=$(curl -s https://sourceforge.net/projects/xanmod/files/releases/stable/${sourceforge_xanmod_stable_ver}/ | grep 'linux-headers' | head -n 2 | awk -F '"' '{print $2}')
+			sourceforge_xanmod_cacule_ver=$(curl -s https://sourceforge.net/projects/xanmod/files/releases/cacule/ | grep 'class="folder ">' | head -n 1 | awk -F '"' '{print $2}')
+			sourceforge_xanmod_cacule_file_img=$(curl -s https://sourceforge.net/projects/xanmod/files/releases/cacule/${sourceforge_xanmod_cacule_ver}/ | grep 'linux-image' | head -n 1 | awk -F '"' '{print $2}')
+			sourceforge_xanmod_cacule_file_head=$(curl -s https://sourceforge.net/projects/xanmod/files/releases/cacule/${sourceforge_xanmod_cacule_ver}/ | grep 'linux-headers' | head -n 2 | awk -F '"' '{print $2}')
+			echo -e "获取的xanmod stable版本号为:${sourceforge_xanmod_stable_ver}"
+			echo -e "获取的xanmod cacule版本号为:${sourceforge_xanmod_cacule_ver}"
+			# kernel_version=$sourceforge_xanmod_stable_ver
+			# detele_kernel_head
+			# headurl=https://sourceforge.net/projects/xanmod/files/releases/stable/${sourceforge_xanmod_stable_ver}/${sourceforge_xanmod_stable_file_head}/download
+			# imgurl=https://sourceforge.net/projects/xanmod/files/releases/stable/${sourceforge_xanmod_stable_ver}/${sourceforge_xanmod_stable_file_img}/download
+			kernel_version=$sourceforge_xanmod_cacule_ver
+			detele_kernel_head
+			headurl=https://sourceforge.net/projects/xanmod/files/releases/cacule/${sourceforge_xanmod_cacule_ver}/${sourceforge_xanmod_cacule_file_head}/download
+			imgurl=https://sourceforge.net/projects/xanmod/files/releases/cacule/${sourceforge_xanmod_cacule_ver}/${sourceforge_xanmod_cacule_file_img}/download
+			echo -e "正在检查headers下载连接...."
+			checkurl $headurl
+			echo -e "正在检查内核下载连接...."
+			checkurl $imgurl
+			wget -N -O linux-headers-d10.deb $headurl
+			wget -N -O linux-image-d10.deb $imgurl
+			dpkg -i linux-image-d10.deb
+			dpkg -i linux-headers-d10.deb
+		else
+			echo -e "${Error} 还在用32位，别再见了 !" && exit 1
+		fi		
 	fi
 	
 	cd .. && rm -rf xanmod
@@ -183,19 +397,37 @@ installxanmod(){
 
 #安装bbr2内核 集成到xanmod内核了
 #安装bbrplus 新内核
+#2021.3.15 开始由https://github.com/UJX6N/bbrplus-5.10 替换bbrplusnew
+#2021.4.12 地址更新为https://github.com/ylx2016/kernel/releases
 installbbrplusnew(){
-	kernel_version="4.14.182-bbrplus"
+	# github_ver_plus=$(curl -s https://github.com/UJX6N/bbrplus-5.10/releases | grep /bbrplus-5.10/releases/tag/ | head -1 | awk -F "[/]" '{print $6}' | awk -F "[>]" '{print $2}' | awk -F "[<]" '{print $1}')
+	# github_ver_plus_num=$(curl -s https://github.com/UJX6N/bbrplus-5.10/releases | grep /bbrplus-5.10/releases/tag/ | head -1 | awk -F "[/]" '{print $6}' | awk -F "[>]" '{print $2}' | awk -F "[<]" '{print $1}' | awk -F "[-]" '{print $1}')
+	# echo -e "获取的UJX6N的bbrplus-5.10版本号为:${github_ver_plus}"
+	echo -e "如果下载地址出错，可能当前正在更新，超过半天还是出错请反馈 大陆自行解决污染问题"
+	# kernel_version=$github_ver_plus
+	
 	bit=`uname -m`
 	rm -rf bbrplusnew
 	mkdir bbrplusnew && cd bbrplusnew
 	if [[ "${release}" == "centos" ]]; then
 		if [[ ${version} = "7" ]]; then
 			if [[ ${bit} = "x86_64" ]]; then
-				kernel_version="4.14.182_bbrplus"
-				detele_kernel_head
-				wget -N -O kernel-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EWtxHt1RiAlHgqERl5bvYzcBUrkKa_n1mWQ-uM2-Na7gmQ?download=1
-				wget -N -O kernel-headers-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EYkNoi17pKJBi7KnhUGRqEIBEK_26-bzkCL-fuQYZmrHWA?download=1
 				
+				# headurl=https://github.com/UJX6N/bbrplus-5.10/releases/download/$github_ver_plus/CentOS-7_Optional_kernel-bbrplus-headers-$github_ver_plus_num-1.bbrplus.el7.x86_64.rpm
+				# imgurl=https://github.com/UJX6N/bbrplus-5.10/releases/download/$github_ver_plus/CentOS-7_Required_kernel-bbrplus-$github_ver_plus_num-1.bbrplus.el7.x86_64.rpm
+				github_centos_ver=$(curl -s 'https://github.com/ylx2016/kernel/releases' | grep 'Centos_Kernel' | grep '_latest_bbrplus_' | head -n 1 | awk -F '"' '{print $2}' | awk -F '_' '{print $3}')
+				github_centos_tag=$(curl -s 'https://github.com/ylx2016/kernel/releases' | grep 'Centos_Kernel' | grep '_latest_bbrplus_' | head -n 1 | awk -F '/' '{print $5}' | awk -F '"' '{print $1}')
+				echo -e "获取的版本号为:${github_centos_ver}"
+				kernel_version=${github_centos_ver}_bbrplus
+				detele_kernel_head
+				headurl=https://github.com/ylx2016/kernel/releases/download/$github_centos_tag/kernel-headers-${github_centos_ver}_bbrplus-1.x86_64.rpm
+				imgurl=https://github.com/ylx2016/kernel/releases/download/$github_centos_tag/kernel-${github_centos_ver}_bbrplus-1.x86_64.rpm
+				echo -e "正在检查headers下载连接...."
+				checkurl $headurl
+				echo -e "正在检查内核下载连接...."
+				checkurl $imgurl
+				wget -N -O kernel-c7.rpm $headurl
+				wget -N -O kernel-headers-c7.rpm $imgurl
 				yum install -y kernel-c7.rpm
 				yum install -y kernel-headers-c7.rpm
 			else
@@ -204,11 +436,22 @@ installbbrplusnew(){
 		fi
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
 		if [[ ${bit} = "x86_64" ]]; then
-			kernel_version="4.14.182-bbrplus"
+			# headurl=https://github.com/UJX6N/bbrplus-5.10/releases/download/$github_ver_plus/Debian-Ubuntu_Required_linux-headers-$github_ver_plus_num-bbrplus_$github_ver_plus_num-bbrplus-1_amd64.deb
+			# imgurl=https://github.com/UJX6N/bbrplus-5.10/releases/download/$github_ver_plus/Debian-Ubuntu_Required_linux-image-$github_ver_plus_num-bbrplus_$github_ver_plus_num-bbrplus-1_amd64.deb
+			github_ubuntu_ver=$(curl -s 'https://github.com/ylx2016/kernel/releases' | grep 'Ubuntu_Kernel' | grep '_latest_bbrplus_' | head -n 1 | awk -F '"' '{print $2}' | awk -F '_' '{print $3}')
+			github_ubuntu_tag=$(curl -s 'https://github.com/ylx2016/kernel/releases' | grep 'Ubuntu_Kernel' | grep '_latest_bbrplus_' | head -n 1 | awk -F '/' '{print $5}' | awk -F '"' '{print $1}')
+			# kernel_version="5.11.4"
+			echo -e "获取的版本号为:${github_ubuntu_ver}"
+			kernel_version=${github_ubuntu_ver}-bbrplus
 			detele_kernel_head
-			wget -N -O linux-headers-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/Ef9pJn1wp-pBk4FIPxT1qBoBqpWhTVCawoKzEB0_vpiMRw?download=1
-			wget -N -O linux-image-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EaFJshr8za9Bq9FGjEBLds0B4ZfrYThLH8E35xe9-qWX_Q?download=1
-					
+			headurl=https://github.com/ylx2016/kernel/releases/download/$github_ubuntu_tag/linux-headers-${github_ubuntu_ver}-bbrplus_${github_ubuntu_ver}-bbrplus-1_amd64.deb
+			imgurl=https://github.com/ylx2016/kernel/releases/download/$github_ubuntu_tag/linux-image-${github_ubuntu_ver}-bbrplus_${github_ubuntu_ver}-bbrplus-1_amd64.deb
+			echo -e "正在检查headers下载连接...."
+			checkurl $headurl
+			echo -e "正在检查内核下载连接...."
+			checkurl $imgurl
+			wget -N -O linux-headers-d10.deb $headurl
+			wget -N -O linux-image-d10.deb $imgurl
 			dpkg -i linux-image-d10.deb
 			dpkg -i linux-headers-d10.deb
 		else
@@ -220,44 +463,6 @@ installbbrplusnew(){
 	BBR_grub
 	echo -e "${Tip} 内核安装完毕，请参考上面的信息检查是否安装成功,默认从排第一的高版本内核启动"
 
-}
-
-#安装cloud内核
-installcloud(){
-	bit=`uname -m`
-	rm -rf kernel_cloud
-	mkdir kernel_cloud && cd kernel_cloud
-	if [[ "${release}" == "centos" ]]; then
-		if [[ ${version} = "7" ]]; then
-			if [[ ${bit} = "x86_64" ]]; then
-				kernel_version="5.11.4_cloud"
-				detele_kernel_head
-				wget -N -O kernel-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/Ef-1PZHkaD5JjGxlnMHMN-0Bk0nvLfSivaakljVWodCeXg?download=1
-				wget -N -O kernel-headers-c7.rpm https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EenmjkQzXBpAlKejFJOJx0ABzCmOKp8uIOh1EmaEiCghfw?download=1
-				
-				yum install -y kernel-c7.rpm
-				yum install -y kernel-headers-c7.rpm
-			else
-				echo -e "${Error} 还在用32位，别再见了 !" && exit 1
-			fi
-		fi
-	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
-		if [[ ${bit} = "x86_64" ]]; then
-			kernel_version="5.11.4-cloud"
-			detele_kernel_head
-			wget -N -O linux-headers-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/ESVJnvhr0uZFvXdCJde247cBqEybb9Z_7EhEi3XfZ_OgqA?download=1
-			wget -N -O linux-image-d10.deb https://chinagz2018-my.sharepoint.com/:u:/g/personal/ylx_chinagz2018_onmicrosoft_com/EWQtDVLuDytEieS4VUzW-m8BWS_2wvs9-7obg6_PpOMOpA?download=1
-					
-			dpkg -i linux-image-d10.deb
-			dpkg -i linux-headers-d10.deb
-		else
-			echo -e "${Error} 还在用32位，别再见了 !" && exit 1
-		fi
-	fi
-
-	cd .. && rm -rf kernel_cloud
-	BBR_grub
-	echo -e "${Tip} 内核安装完毕，请参考上面的信息检查是否安装成功,默认从排第一的高版本内核启动"
 }
 
 #启用BBR+fq
@@ -300,13 +505,13 @@ startbbrplus(){
 startlotserver(){
 	remove_bbr_lotserver
 	if [[ "${release}" == "centos" ]]; then
-		yum install ethtool
+		yum install ethtool -y
 	else
 		apt-get update
-		apt-get install ethtool
+		apt-get install ethtool -y
 	fi
 	#bash <(wget -qO- https://git.io/lotServerInstall.sh) install
-	bash <(wget --no-check-certificate -qO- https://github.com/xidcn/LotServer_Vicer/raw/master/Install.sh) install
+	echo | bash <(wget --no-check-certificate -qO- https://github.com/xidcn/LotServer_Vicer/raw/master/Install.sh) install
 	sed -i '/advinacc/d' /appex/etc/config
 	sed -i '/maxmode/d' /appex/etc/config
 	echo -e "advinacc=\"1\"
@@ -375,7 +580,7 @@ remove_bbr_lotserver(){
 	rm -rf bbrmod
 	
 	if [[ -e /appex/bin/lotServer.sh ]]; then
-		bash <(wget -qO- https://git.io/lotServerInstall.sh) uninstall
+		echo | bash <(wget -qO- https://git.io/lotServerInstall.sh) uninstall
 	fi
 	clear
 	# echo -e "${Info}:清除bbr/lotserver加速完成。"
@@ -893,7 +1098,7 @@ echo -e "${Info}johnrosen1优化方案应用结束，可能需要重启！"
 #更新脚本
 Update_Shell(){
 	echo -e "当前版本为 [ ${sh_ver} ]，开始检测最新版本..."
-	sh_new_ver=$(wget -qO- "https://${github}/tcpx.sh"|grep 'sh_ver="'|awk -F "=" '{print $NF}'|sed 's/\"//g'|head -1)
+	sh_new_ver=$(wget -qO- "https://git.io/JYxKU"|grep 'sh_ver="'|awk -F "=" '{print $NF}'|sed 's/\"//g'|head -1)
 	[[ -z ${sh_new_ver} ]] && echo -e "${Error} 检测最新版本失败 !" && start_menu
 	if [[ ${sh_new_ver} != ${sh_ver} ]]; then
 		echo -e "发现新版本[ ${sh_new_ver} ]，是否更新？[Y/n]"
@@ -914,7 +1119,7 @@ Update_Shell(){
 #切换到卸载内核版本
 gototcp(){
 	clear
-	wget -N "https://github.000060000.xyz/tcp.sh" && chmod +x tcp.sh && ./tcp.sh
+	wget -O tcp.sh "https://git.io/coolspeeda" && chmod +x tcp.sh && ./tcp.sh
 }
 
 #切换到秋水逸冰BBR安装脚本
@@ -969,7 +1174,7 @@ clear
 echo && echo -e " TCP加速 一键安装管理脚本 ${Red_font_prefix}[v${sh_ver}] 不卸内核${Font_color_suffix} from blog.ylx.me 母鸡慎用
  ${Green_font_prefix}0.${Font_color_suffix} 升级脚本
  ${Green_font_prefix}9.${Font_color_suffix} 切换到卸载内核版本		${Green_font_prefix}10.${Font_color_suffix} 切换到一键DD系统脚本
- ${Green_font_prefix}1.${Font_color_suffix} 安装 BBR原版内核		${Green_font_prefix}4.${Font_color_suffix} 安装 cloud内核 KVM
+ ${Green_font_prefix}1.${Font_color_suffix} 安装 BBR原版内核
  ${Green_font_prefix}2.${Font_color_suffix} 安装 BBRplus版内核		${Green_font_prefix}5.${Font_color_suffix} 安装 BBRplus新版内核
  ${Green_font_prefix}3.${Font_color_suffix} 安装 Lotserver(锐速)内核	${Green_font_prefix}6.${Font_color_suffix} 安装 xanmod版内核
  ${Green_font_prefix}30.${Font_color_suffix} 安装 官方稳定内核		${Green_font_prefix}31.${Font_color_suffix} 安装 官方最新内核 backports/elrepo
@@ -1011,9 +1216,9 @@ case "$num" in
 	3)
 	check_sys_Lotsever
 	;;
-	4)
-	check_sys_cloud
-	;;
+	# 4)
+	# check_sys_cloud
+	# ;;
 	5)
 	check_sys_bbrplusnew
 	;;
@@ -1359,6 +1564,7 @@ check_sys_bbr(){
 			echo -e "${Error} BBR内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
 		fi
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
+		apt-get --fix-broken install -y && apt-get autoremove -y
 		installbbr
 	else
 		echo -e "${Error} BBR内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
@@ -1374,6 +1580,7 @@ check_sys_bbrplus(){
 			echo -e "${Error} BBRplus内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
 		fi
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
+		apt-get --fix-broken install -y && apt-get autoremove -y
 		installbbrplus
 	else
 		echo -e "${Error} BBRplus内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
@@ -1389,6 +1596,7 @@ check_sys_bbrplusnew(){
 			echo -e "${Error} BBRplusNew内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
 		fi
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
+		apt-get --fix-broken install -y && apt-get autoremove -y
 		installbbrplusnew
 	else
 		echo -e "${Error} BBRplusNew内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
@@ -1398,12 +1606,13 @@ check_sys_bbrplusnew(){
 check_sys_xanmod(){
 	check_version
 	if [[ "${release}" == "centos" ]]; then
-		if [[ ${version} = "7" || ${version} = "8" ]]; then
+		if [[ ${version} = "7" ]]; then
 			installxanmod
 		else
 			echo -e "${Error} xanmod内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
 		fi
 	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
+		apt-get --fix-broken install -y && apt-get autoremove -y
 		installxanmod
 	else
 		echo -e "${Error} xanmod内核不支持当前系统 ${release} ${version} ${bit} !" && exit 1
@@ -1572,20 +1781,20 @@ check_sys_official_debian_cloud(){
 	echo -e "${Tip} 内核安装完毕，请参考上面的信息检查是否安装成功,默认从排第一的高版本内核启动"
 }
 #检查cloud内核并安装
-check_sys_cloud(){
-	check_version
-	if [[ "${release}" == "centos" ]]; then
-		if [[ ${version} = "7" ]]; then
-			installcloud
-		else
-			echo -e "${Error} 不支持当前系统 ${release} ${version} ${bit} !" && exit 1
-		fi
-	elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
-		installcloud
-	else
-		echo -e "${Error} 不支持当前系统 ${release} ${version} ${bit} !" && exit 1
-	fi
-}
+# check_sys_cloud(){
+	# check_version
+	# if [[ "${release}" == "centos" ]]; then
+		# if [[ ${version} = "7" ]]; then
+			# installcloud
+		# else
+			# echo -e "${Error} 不支持当前系统 ${release} ${version} ${bit} !" && exit 1
+		# fi
+	# elif [[ "${release}" == "debian" || "${release}" == "ubuntu" ]]; then
+		# installcloud
+	# else
+		# echo -e "${Error} 不支持当前系统 ${release} ${version} ${bit} !" && exit 1
+	# fi
+# }
 
 #检查系统当前状态
 check_status(){
@@ -1594,9 +1803,12 @@ check_status(){
 	net_congestion_control=`cat /proc/sys/net/ipv4/tcp_congestion_control | awk '{print $1}'`
 	net_qdisc=`cat /proc/sys/net/core/default_qdisc | awk '{print $1}'`
 	kernel_version_r=`uname -r | awk '{print $1}'`
-	if [[ ${kernel_version_full} = "4.14.182-bbrplus" || ${kernel_version_full} = "4.14.168-bbrplus" || ${kernel_version_full} = "4.14.98-bbrplus" || ${kernel_version_full} = "4.14.129-bbrplus" || ${kernel_version_full} = "4.14.160-bbrplus" || ${kernel_version_full} = "4.14.166-bbrplus" || ${kernel_version_full} = "4.14.161-bbrplus" ]]; then
+	# if [[ ${kernel_version_full} = "4.14.182-bbrplus" || ${kernel_version_full} = "4.14.168-bbrplus" || ${kernel_version_full} = "4.14.98-bbrplus" || ${kernel_version_full} = "4.14.129-bbrplus" || ${kernel_version_full} = "4.14.160-bbrplus" || ${kernel_version_full} = "4.14.166-bbrplus" || ${kernel_version_full} = "4.14.161-bbrplus" ]]; then
+	if [[ ${kernel_version_full} == *bbrplus* ]]; then
 		kernel_status="BBRplus"
-	elif [[ ${kernel_version} = "3.10.0" || ${kernel_version} = "3.16.0" || ${kernel_version} = "3.2.0" || ${kernel_version} = "4.4.0" || ${kernel_version} = "3.13.0"  || ${kernel_version} = "2.6.32" || ${kernel_version} = "4.9.0" || ${kernel_version} = "4.11.2" ]]; then
+	# elif [[ ${kernel_version} = "3.10.0" || ${kernel_version} = "3.16.0" || ${kernel_version} = "3.2.0" || ${kernel_version} = "4.4.0" || ${kernel_version} = "3.13.0"  || ${kernel_version} = "2.6.32" || ${kernel_version} = "4.9.0" || ${kernel_version} = "4.11.2" || ${kernel_version} = "4.15.0" ]]; then
+		# kernel_status="Lotserver"	
+	elif [[ ${kernel_version_full} == *4.9.0-4* || ${kernel_version_full} == *4.15.0-30* || ${kernel_version_full} == *4.8.0-36* || ${kernel_version_full} == *3.16.0-77* || ${kernel_version_full} == *3.16.0-4* || ${kernel_version_full} == *3.2.0-4* || ${kernel_version_full} == *4.11.2-1* || ${kernel_version_full} == *2.6.32-504* || ${kernel_version_full} == *4.4.0-47* || ${kernel_version_full} == *3.13.0-29 || ${kernel_version_full} == *4.4.0-47* ]]; then
 		kernel_status="Lotserver"
 	elif [[ `echo ${kernel_version} | awk -F'.' '{print $1}'` == "4" ]] && [[ `echo ${kernel_version} | awk -F'.' '{print $2}'` -ge 9 ]] || [[ `echo ${kernel_version} | awk -F'.' '{print $1}'` == "5" ]]; then
 		kernel_status="BBR"
@@ -1659,6 +1871,8 @@ check_status(){
 			else 
 				run_status="BBRplus启动失败"
 			fi
+		elif [[ ${run_status} == "bbr" ]]; then
+				run_status="BBR启动成功"	
 		else 
 			run_status="未安装加速模块"
 		fi
